@@ -1,66 +1,33 @@
 {
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Angel AI Assistant",
+  "version": "0.1.0",
+  "identifier": "com.angel.assistant",
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"]
+  },
   "build": {
     "beforeDevCommand": "npm run vite",
     "beforeBuildCommand": "npm run build",
-    "devPath": "http://localhost:5173",
-    "distDir": "../dist"
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:5173"
   },
-  "package": {
-    "productName": "Angel AI Assistant",
-    "version": "0.1.0"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "shell": { "all": false, "open": true },
-      "window": {
-        "all": false,
-        "create": true,
-        "hide": true,
-        "show": true,
-        "minimize": true,
-        "maximize": true,
-        "unmaximize": true,
-        "close": true,
-        "startDragging": true,
-        "setContentProtected": true,
-        "setSkipTaskbar": true,
-        "setAlwaysOnTop": true,
-        "setDecorations": true,
-        "setFocus": true,
-        "setPosition": true,
-        "setSize": true
-      },
-      "http": {
-        "all": true,
-        "request": true,
-        "scope": [
-          "https://generativelanguage.googleapis.com/*",
-          "https://api.openai.com/*",
-          "https://*.supabase.co/*"
-        ]
-      },
-      "globalShortcut": { "all": true },
-      "notification": { "all": true },
-      "clipboard": { "all": true },
-      "protocol": { "all": true, "asset": true, "assetScope": ["**"] }
-    },
+  "app": {
     "windows": [
       {
-        "fullscreen": false,
-        "height": 600,
-        "resizable": true,
         "title": "Angel AI Assistant",
         "width": 400,
+        "height": 600,
         "decorations": false,
         "transparent": true,
         "alwaysOnTop": true,
-        "skipTaskbar": false,
         "center": true
       }
     ],
     "security": {
-      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://generativelanguage.googleapis.com https://api.openai.com https://*.supabase.co; media-src 'self' blob:; img-src 'self' data:; frame-src 'self';"
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://generativelanguage.googleapis.com https://api.openai.com; img-src 'self' data:;"
     }
   }
 }
