@@ -40,13 +40,26 @@ export const useAppStore = create<AppState>()(
 
       // --- Actions ---
       setIsListening: (value) => set({ isListening: value }),
+      
       setIsProcessing: (value) => set({ isProcessing: value }),
+      
       setTranscript: (value) => set({ transcript: value }),
       
       appendTranscript: (text) => set((state) => {
-        // Prevent duplicate appending of the same string if the speech engine double-fires
-        if (state.transcript.endsWith(text)) return state;
-        return { transcript: state.transcript + text };
+        // Handle spacing and prevent duplicate phrases from speech recognition "isFinal" events
+        const cleanText = text.trim();
+        if (!cleanText) return state;
+        
+        const currentTranscript = state.transcript.trim();
+        
+        // Prevent repeating exactly what was just said
+        if (currentTranscript.endsWith(cleanText)) return state;
+        
+        const newTranscript = currentTranscript 
+          ? `${currentTranscript} ${cleanText}` 
+          : cleanText;
+
+        return { transcript: newTranscript };
       }),
 
       clearTranscript: () => set({ 
@@ -57,26 +70,28 @@ export const useAppStore = create<AppState>()(
       }),
 
       setAiResponse: (value) => set({ aiResponse: value }),
+      
       setAiError: (value) => set({ aiError: value }),
+      
       setApiProvider: (value) => set({ apiProvider: value }),
 
       setAlwaysOnTop: async (value) => {
         set({ alwaysOnTop: value });
-        // Sync with the actual native window
         try {
+          // Native Tauri bridge call
           await appWindow.setAlwaysOnTop(value);
         } catch (err) {
-          console.error("Failed to set native AlwaysOnTop:", err);
+          console.error("Native Bridge Error: setAlwaysOnTop failed", err);
         }
       },
 
       setHideFromScreenSharing: async (value) => {
         set({ hideFromScreenSharing: value });
-        // Note: This requires specific Tauri permissions in tauri.conf.json
         try {
+          // setContentProtected is supported on Windows and macOS
           await (appWindow as any).setContentProtected(value);
         } catch (err) {
-          console.warn("Content protection not supported on this platform/setup");
+          console.warn("Native Bridge Error: Content protection not available", err);
         }
       },
 
@@ -89,14 +104,25 @@ export const useAppStore = create<AppState>()(
       }),
     }),
     {
-      name: 'angel-ai-storage', // Key for local storage
+      name: 'angel-ai-storage',
       storage: createJSONStorage(() => localStorage),
-      // Only persist settings, not the temporary transcript/AI status
+      // Only persist user preferences. 
+      // Do NOT persist 'transcript' or 'isListening' to avoid 
+      // the mic turning on automatically upon app launch.
       partialize: (state) => ({ 
         apiProvider: state.apiProvider, 
         alwaysOnTop: state.alwaysOnTop,
         hideFromScreenSharing: state.hideFromScreenSharing 
       }),
+      // This ensures that when the app rehydrates, isListening is always false
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.isListening = false;
+          state.isProcessing = false;
+          // Apply native settings on load
+          appWindow.setAlwaysOnTop(state.alwaysOnTop).catch(() => {});
+        }
+      }
     }
   )
 )

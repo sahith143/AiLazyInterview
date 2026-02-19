@@ -12,10 +12,7 @@
   "tauri": {
     "allowlist": {
       "all": false,
-      "shell": {
-        "all": false,
-        "open": true
-      },
+      "shell": { "all": false, "open": true },
       "window": {
         "all": false,
         "create": true,
@@ -30,25 +27,22 @@
         "setDecorations": true,
         "setFocus": true,
         "setPosition": true,
-        "setSize": true
+        "setSize": true,
+        "setVisible": true 
       },
       "http": {
         "all": true,
         "request": true,
         "scope": [
           "https://generativelanguage.googleapis.com/*",
+          "https://api.openai.com/*",
           "https://*.supabase.co/*"
         ]
       },
-      "globalShortcut": {
-        "all": true
-      },
-      "notification": {
-        "all": true
-      },
-      "clipboard": {
-        "all": true
-      }
+      "globalShortcut": { "all": true },
+      "notification": { "all": true },
+      "clipboard": { "all": true },
+      "protocol": { "all": true, "asset": true, "assetScope": ["**"] }
     },
     "windows": [
       {
@@ -60,11 +54,12 @@
         "decorations": false,
         "transparent": true,
         "alwaysOnTop": true,
-        "skipTaskbar": false
+        "skipTaskbar": false,
+        "center": true
       }
     ],
     "security": {
-      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://generativelanguage.googleapis.com https://*.supabase.co; media-src 'self' blob:; img-src 'self' data:; frame-src 'self';"
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://generativelanguage.googleapis.com https://api.openai.com https://*.supabase.co; media-src 'self' blob:; img-src 'self' data:; frame-src 'self';"
     }
   }
 }

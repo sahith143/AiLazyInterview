@@ -1,51 +1,64 @@
-import { useEffect } from 'react'
-import { register, unregisterAll } from '@tauri-apps/api/globalShortcut'
+import { useEffect, useRef } from 'react'
+import { register, unregisterAll, isRegistered } from '@tauri-apps/api/globalShortcut'
 import { appWindow } from '@tauri-apps/api/window'
-import { useAppStore } from '../store/useAppStore'
 
 export const useGlobalShortcuts = (
   onToggleListening: () => void,
 ) => {
+  // Use a ref to prevent multiple registration attempts during strict-mode double mounts
+  const isSetupRef = useRef(false);
+
   useEffect(() => {
+    const shortcut = 'Alt+Space';
+
     const setupShortcuts = async () => {
       try {
-        // Unregister all to prevent "shortcut already registered" errors on hot-reload
-        await unregisterAll();
+        // 1. Check if already registered to avoid errors
+        const exists = await isRegistered(shortcut);
+        if (exists) {
+          await unregisterAll();
+        }
 
-        // Register Alt+Space as the global trigger
-        // (Space alone is risky globally as it interferes with typing)
-        await register('Alt+Space', async () => {
-          console.log('Global shortcut Alt+Space triggered');
+        // 2. Register the Global Shortcut
+        await register(shortcut, async () => {
+          console.log(`Global shortcut ${shortcut} triggered`);
           
-          // 1. Ensure the window comes to front if needed
-          await appWindow.show();
+          // Ensure window is visible and active
+          const isVisible = await appWindow.isVisible();
+          if (!isVisible) {
+            await appWindow.show();
+          }
           await appWindow.setFocus();
           
-          // 2. Trigger the listening toggle
+          // Trigger the app logic
           onToggleListening();
         });
 
+        isSetupRef.current = true;
       } catch (err) {
-        console.error("Failed to register global shortcut:", err);
+        console.error("Tauri: Global shortcut registration failed:", err);
       }
     }
 
     setupShortcuts();
 
-    // Cleanup: Unregister shortcuts when the component unmounts
+    // Cleanup: Properly unregister when component unmounts
     return () => {
-      unregisterAll();
+      unregisterAll().catch(console.error);
+      isSetupRef.current = false;
     }
-  }, [onToggleListening])
+  }, [onToggleListening]);
 
-  // We still keep a local listener for when the app is focused 
-  // so the user can use just 'Space' inside the app window.
+  // LOCAL LISTENER (Standard Browser Spacebar)
   useEffect(() => {
     const handleLocalKeyDown = (e: KeyboardEvent) => {
-      // If user is typing in an input, don't trigger the shortcut
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
-        return;
-      }
+      // Don't trigger if user is typing in an input field
+      const isTyping = 
+        e.target instanceof HTMLInputElement || 
+        e.target instanceof HTMLTextAreaElement || 
+        (e.target as HTMLElement).isContentEditable;
+
+      if (isTyping) return;
 
       if (e.code === 'Space') {
         e.preventDefault();

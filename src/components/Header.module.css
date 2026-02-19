@@ -2,11 +2,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--spacing-md);
+  padding: 0 var(--spacing-md); /* Removed vertical padding to fix height */
+  height: 48px; /* Fixed height for a consistent drag area */
   background-color: var(--color-bg-secondary);
   border-bottom: 1px solid var(--color-border);
   user-select: none;
-  -webkit-user-drag: none;
+  
+  /* IMPORTANT: This makes the cursor look correct over the drag area */
+  cursor: grab;
+}
+
+.header:active {
+  cursor: grabbing;
 }
 
 .left {
@@ -14,65 +21,88 @@
   align-items: center;
   gap: var(--spacing-md);
   flex: 1;
+  /* Prevent child text from blocking the drag event */
+  pointer-events: none; 
 }
 
 .title {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-md);
   font-weight: var(--font-weight-semibold);
   margin: 0;
+  color: var(--color-text-primary);
 }
 
 .right {
   display: flex;
   align-items: center;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-md);
+  /* Re-enable pointer events so buttons and toggles remain clickable */
+  pointer-events: auto;
 }
 
+/* NEW: Container for Pin and Privacy toggles */
 .toggleGroup {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-md);
 }
 
-.toggleLabel {
+.checkboxContainer {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: 6px;
   cursor: pointer;
-  user-select: none;
 }
 
-.hiddenCheckbox {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
+.checkboxContainer input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
   accent-color: var(--color-accent-primary);
+  cursor: pointer;
 }
 
 .toggleText {
-  font-size: var(--font-size-sm);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   color: var(--color-text-secondary);
   white-space: nowrap;
 }
 
-.settingsButton {
+/* NEW: Window Action Buttons (Minimize/Close) */
+.windowActions {
+  display: flex;
+  align-items: center;
+  margin-left: var(--spacing-sm);
+  border-left: 1px solid var(--color-border);
+  padding-left: var(--spacing-sm);
+}
+
+.minusBtn, .closeBtn, .iconButton {
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-sm);
-  background-color: var(--color-bg-tertiary);
-  border-radius: var(--radius-md);
-  color: var(--color-text-primary);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all 0.2s;
+  border-radius: 4px;
 }
 
-.settingsButton:hover {
-  background-color: var(--color-accent-primary);
+.iconButton:hover {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+.closeBtn:hover {
+  background-color: #ff4757 !important;
+  color: white !important;
+}
+
+.minusBtn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
   color: white;
-  transform: scale(1.05);
-}
-
-.settingsButton:active {
-  transform: scale(0.95);
 }

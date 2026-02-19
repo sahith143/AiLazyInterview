@@ -2,43 +2,86 @@
   display: flex;
   gap: var(--spacing-md);
   padding: 0 var(--spacing-lg) var(--spacing-lg) var(--spacing-lg);
-  justify-content: flex-end;
+  justify-content: space-between; /* Adjusted to separate New and Analyze buttons */
+  align-items: center;
+  margin-top: auto; /* Pushes controls to the bottom of the main flex container */
+  /* Ensure this area isn't draggable so buttons remain clickable */
+  data-tauri-drag-region: false;
 }
 
-.resetButton {
+.leftGroup, .rightGroup {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.resetButton, .sendButton {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
   padding: var(--spacing-sm) var(--spacing-lg);
-  background-color: var(--color-bg-tertiary);
-  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  color: var(--color-text-primary);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: all var(--transition-fast);
+  border: 1px solid var(--color-border);
+}
+
+/* Reset/New Button Specifics */
+.resetButton {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
 }
 
 .resetButton:hover:not(:disabled) {
+  background-color: rgba(239, 68, 68, 0.1); /* Slight red tint for 'Reset' */
+  border-color: #ef4444;
+  color: #ef4444;
+  transform: translateY(-2px);
+}
+
+/* Analyze/Send Button Specifics */
+.sendButton {
   background-color: var(--color-accent-primary);
   border-color: var(--color-accent-primary);
   color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
 }
 
-.resetButton:active:not(:disabled) {
+.sendButton:hover:not(:disabled) {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.resetButton:active:not(:disabled),
+.sendButton:active:not(:disabled) {
   transform: translateY(0);
 }
 
-.resetButton:disabled {
+.resetButton:disabled,
+.sendButton:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  filter: grayscale(1);
 }
 
-.resetButton svg {
+.icon {
   width: 16px;
   height: 16px;
+}
+
+/* Spinner for the Analyze button during processing */
+.loader {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

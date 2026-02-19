@@ -1,5 +1,5 @@
-import { useEffect, useCallback } from 'react'
-import { appWindow } from '@tauri-apps/api/window' // Required for Hide/Show
+import { useEffect, useCallback, useRef } from 'react'
+import { appWindow } from '@tauri-apps/api/window'
 import { useAppStore } from './store/useAppStore'
 import { useSpeechRecognition } from './hooks/useSpeechRecognition'
 import { useGlobalShortcuts } from './hooks/useGlobalShortcuts'
@@ -15,71 +15,69 @@ function App() {
   const { isListening, transcript, clearTranscript } = useAppStore()
   const { startListening, stopListening } = useSpeechRecognition()
   const { query } = useAiQuery()
+  
+  const transcriptRef = useRef(transcript);
+  useEffect(() => { transcriptRef.current = transcript; }, [transcript]);
 
-  // 1. MANDATORY: Trigger Microphone Permission & System Check
   useEffect(() => {
     const initPermissions = async () => {
       try {
-        // This forces the OS/WebView to prompt for Mic access
         await navigator.mediaDevices.getUserMedia({ audio: true });
-        console.log("Microphone access granted");
+        console.log("System: Microphone access secured.");
       } catch (err) {
-        console.error("Microphone access denied or blocked by CSP:", err);
+        console.error("System: Microphone blocked.", err);
       }
     };
     initPermissions();
   }, []);
 
-  // 2. Window Control Logic (Fixes the "Hidden" issue)
   const toggleVisibility = useCallback(async (visible: boolean) => {
-    if (visible) {
-      await appWindow.show();
-      await appWindow.setFocus();
-    } else {
-      await appWindow.hide();
+    try {
+      if (visible) {
+        await appWindow.show();
+        await appWindow.setFocus();
+      } else {
+        await appWindow.hide();
+      }
+    } catch (err) {
+      console.error("Tauri: Window command failed", err);
     }
   }, []);
 
-  // 3. Global Shortcut Handler
+  const queryAI = useCallback(async () => {
+    const currentText = transcriptRef.current.trim();
+    if (!currentText) return;
+
+    const geminiKey = import.meta.env.VITE_API_KEY_GEMINI || localStorage.getItem('api_key_gemini');
+    const openaiKey = import.meta.env.VITE_API_KEY_OPENAI || localStorage.getItem('api_key_openai');
+    const activeKey = geminiKey || openaiKey;
+
+    if (activeKey) {
+      await query(currentText, activeKey);
+    }
+  }, [query]);
+
   useGlobalShortcuts(
     useCallback(() => {
       if (isListening) {
         stopListening();
-        // Option: toggleVisibility(false); // Hide window when done listening
       } else {
-        toggleVisibility(true); // Ensure window is visible when listening starts
+        toggleVisibility(true);
+        clearTranscript();
         startListening();
       }
-    }, [isListening, startListening, stopListening, toggleVisibility]),
+    }, [isListening, startListening, stopListening, toggleVisibility, clearTranscript]),
   )
 
-  // 4. AI Query Logic (Fixed to use .env values)
-  const queryAI = useCallback(async () => {
-    if (!transcript.trim()) return
-
-    // Priority: .env (Vite) > localStorage
-    const geminiKey = import.meta.env.VITE_API_KEY_GEMINI || localStorage.getItem('api_key_gemini');
-    const openaiKey = import.meta.env.VITE_API_KEY_OPENAI || localStorage.getItem('api_key_openai');
-    
-    const activeKey = geminiKey || openaiKey;
-
-    if (activeKey) {
-      await query(transcript, activeKey);
-    } else {
-      console.error("No API Key found in .env or Settings");
-    }
-  }, [transcript, query]);
-
-  // Handle auto-query when user stops talking
   useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (!isListening && transcript.trim()) {
-      timer = setTimeout(() => {
+    let timer: number;
+    if (!isListening && transcript.trim().length > 0) {
+      timer = window.setTimeout(() => {
         queryAI();
-      }, 500);
+      }, 800);
     }
     return () => clearTimeout(timer);
-  }, [isListening, transcript, queryAI]);
+  }, [isListening, queryAI]);
 
   const toggleRecording = useCallback(() => {
     if (isListening) {
@@ -90,31 +88,39 @@ function App() {
     }
   }, [isListening, startListening, stopListening, clearTranscript])
 
-  const handleReset = useCallback(() => {
-    if (isListening) {
-      stopListening()
+  // FIXED HIDE HANDLER
+  const handleHideWindow = async () => {
+    try {
+      await appWindow.hide();
+    } catch (error) {
+      console.error("Failed to hide window:", error);
     }
-    clearTranscript()
-  }, [isListening, stopListening, clearTranscript])
+  };
 
   return (
     <div className="app">
-      <Header />
+      <div className="titlebar" data-tauri-drag-region>
+        <Header />
+      </div>
+
       <main className="main">
         <TranscriptLog />
+        
         <div className="controls-container">
            <MicrophoneButton onClick={toggleRecording} />
-           {/* Add a manual hide button to test visibility logic */}
            <button 
-             onClick={() => appWindow.hide()} 
+             onClick={handleHideWindow} 
              className="hide-btn"
-             title="Hide to Tray"
            >
-             Hide
+             Hide Assistant
            </button>
         </div>
+
         <AIResponse />
-        <Controls onReset={handleReset} />
+        <Controls onReset={() => {
+          stopListening();
+          clearTranscript();
+        }} />
       </main>
     </div>
   )

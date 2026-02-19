@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { invoke } from '@tauri-apps/api/tauri'
 import { useAppStore } from '../store/useAppStore'
 import styles from './SettingsModal.module.css'
 
@@ -10,26 +9,14 @@ interface SettingsModalProps {
 export const SettingsModal: React.FC<SettingsModalProps> = ({ onClose }) => {
   const { apiProvider, setApiProvider } = useAppStore()
   const [apiKey, setApiKey] = useState('')
-  const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
+  // 1. Load keys from LocalStorage on mount
   useEffect(() => {
-    loadApiKey()
+    const key = localStorage.getItem(`api_key_${apiProvider}`) || ''
+    setApiKey(key)
   }, [apiProvider])
-
-  const loadApiKey = async () => {
-    setIsLoading(true)
-    try {
-      const key = await invoke<string | null>('load_api_key', { provider: apiProvider })
-      setApiKey(key || '')
-    } catch (error) {
-      console.error('Failed to load API key:', error)
-      setMessage({ type: 'error', text: 'Failed to load API key' })
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
   const handleSave = async () => {
     if (!apiKey.trim()) {
@@ -39,73 +26,75 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ onClose }) => {
 
     setIsSaving(true)
     try {
-      await invoke('save_api_key', { provider: apiProvider, apiKey: apiKey.trim() })
-      setMessage({ type: 'success', text: 'API key saved successfully' })
+      // We store the key securely in the browser's local storage context
+      localStorage.setItem(`api_key_${apiProvider}`, apiKey.trim())
+      
+      setMessage({ type: 'success', text: `${apiProvider.toUpperCase()} key saved!` })
+      
+      // Auto-clear success message
       setTimeout(() => setMessage(null), 3000)
     } catch (error) {
-      setMessage({ type: 'error', text: `Failed to save API key: ${error}` })
+      setMessage({ type: 'error', text: 'Failed to save to local storage.' })
     } finally {
       setIsSaving(false)
     }
   }
 
-  const handleClear = async () => {
-    if (!confirm('Are you sure you want to clear the API key?')) return
-
-    setIsSaving(true)
-    try {
-      await invoke('clear_api_key', { provider: apiProvider })
-      setApiKey('')
-      setMessage({ type: 'success', text: 'API key cleared' })
-    } catch (error) {
-      setMessage({ type: 'error', text: `Failed to clear API key: ${error}` })
-    } finally {
-      setIsSaving(false)
-    }
+  const handleClear = () => {
+    if (!confirm('Clear this API key?')) return
+    localStorage.removeItem(`api_key_${apiProvider}`)
+    setApiKey('')
+    setMessage({ type: 'success', text: 'Key removed' })
   }
 
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <h2 className={styles.title}>Settings</h2>
-          <button onClick={onClose} className={styles.closeButton} aria-label="Close">
-            ✕
-          </button>
+          <div className={styles.headerTitleGroup}>
+             <h2 className={styles.title}>Settings</h2>
+             <span className={styles.badge}>v0.1.0</span>
+          </div>
+          <button onClick={onClose} className={styles.closeButton}>✕</button>
         </div>
 
         <div className={styles.content}>
           <div className={styles.section}>
-            <h3>API Provider</h3>
+            <label className={styles.label}>AI Provider</label>
             <select
               value={apiProvider}
               onChange={(e) => setApiProvider(e.target.value)}
               className={styles.select}
-              disabled={isLoading}
             >
-              <option value="gemini">Google Gemini</option>
-              <option value="openai">OpenAI</option>
+              <option value="gemini">Google Gemini (Recommended)</option>
+              <option value="openai">OpenAI (GPT-3.5/4)</option>
             </select>
           </div>
 
           <div className={styles.section}>
             <label className={styles.label}>
-              API Key
+              {apiProvider === 'gemini' ? 'Gemini API Key' : 'OpenAI API Key'}
+            </label>
+            <div className={styles.inputWrapper}>
               <input
                 type="password"
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
-                placeholder={`Enter your ${apiProvider === 'gemini' ? 'Google Gemini' : 'OpenAI'} API key`}
+                placeholder="Paste your key here..."
                 className={styles.input}
-                disabled={isLoading || isSaving}
               />
-            </label>
+            </div>
+            <p className={styles.helpText}>
+              Your key is stored locally on this device and never shared.
+            </p>
           </div>
 
-          <div className={styles.section}>
-            <h4>Privacy Notice</h4>
-            <p className={styles.notice}>
-              All audio processing is done locally on your device. Transcripts are not stored permanently and are only sent to the AI API when you explicitly finish speaking.
+          <div className={styles.noticeBox}>
+            <h4>🔒 Privacy & Security</h4>
+            <p>
+              Angel AI processes audio in real-time. Transcripts are sent to 
+              <strong> {apiProvider === 'gemini' ? 'Google' : 'OpenAI'}</strong> 
+              only when you trigger an analysis.
             </p>
           </div>
 
@@ -118,17 +107,17 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ onClose }) => {
           <div className={styles.actions}>
             <button
               onClick={handleClear}
-              className={`${styles.button} ${styles.secondary}`}
-              disabled={!apiKey || isSaving || isLoading}
+              className={styles.clearBtn}
+              disabled={!apiKey}
             >
-              Clear Key
+              Delete Key
             </button>
             <button
               onClick={handleSave}
-              className={`${styles.button} ${styles.primary}`}
-              disabled={isSaving || isLoading}
+              className={styles.saveBtn}
+              disabled={isSaving}
             >
-              {isSaving ? 'Saving...' : 'Save'}
+              {isSaving ? 'Saving...' : 'Save Configuration'}
             </button>
           </div>
         </div>
