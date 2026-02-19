@@ -14,64 +14,62 @@ export const useAiQuery = () => {
     setAiError(null)
 
     try {
-      // 1. Initialize the Tauri native HTTP client
       const client = await getClient()
+      const resume = localStorage.getItem('user_resume') || ''; // Fetch stored resume
       
       let endpoint = ''
       let payload = {}
-      let headers: Record<string, string> = {
-        'Content-Type': 'application/json'
-      }
+      let headers: Record<string, string> = { 'Content-Type': 'application/json' }
 
-      // 2. Configure Request based on Provider
+      // 1. Configure Request for Gemini (Optimized for gemini-1.5-flash)
       if (apiProvider === 'gemini') {
-        endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`
+        // Updated model to gemini-1.5-flash for speed
+        endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`
         payload = {
           contents: [{ 
             parts: [{ 
-              text: `You are a meeting assistant. Based on this transcript: "${transcript}", provide a concise summary or helpful insights.` 
+              text: `
+                Persona: You are a professional interview proxy. 
+                Resume Context: ${resume}
+                Task: Based on this transcript: "${transcript}", provide a human-like, concise answer.
+                Strict Rules: Use resume details. Keep under 3 sentences. No AI mentions.
+              ` 
             }] 
           }]
         }
-      } else {
+      } 
+      // 2. Configure Request for OpenAI (Optimized for gpt-4o-mini)
+      else {
         endpoint = 'https://api.openai.com/v1/chat/completions'
         headers['Authorization'] = `Bearer ${apiKey}`
         payload = {
-          model: 'gpt-3.5-turbo',
-          messages: [{ role: 'user', content: transcript }]
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: `You are an interview assistant. Resume: ${resume}` },
+            { role: 'user', content: transcript }
+          ]
         }
       }
 
-      // 3. Execute the request via Tauri Bridge
       const response = await client.post(endpoint, Body.json(payload), {
         headers,
         responseType: ResponseType.JSON,
-        timeout: 30 // Set a 30-second timeout
+        timeout: 30
       })
 
-      // 4. Handle Results
       if (response.ok) {
-        let aiText = ''
         const data = response.data as any
-
-        if (apiProvider === 'gemini') {
-          // Path: candidates -> content -> parts -> text
-          aiText = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'No response from Gemini.'
-        } else {
-          // Path: choices -> message -> content
-          aiText = data?.choices?.[0]?.message?.content || 'No response from OpenAI.'
-        }
+        const aiText = apiProvider === 'gemini' 
+          ? data?.candidates?.[0]?.content?.parts?.[0]?.text 
+          : data?.choices?.[0]?.message?.content;
         
-        setAiResponse(aiText)
+        setAiResponse(aiText || 'No response generated.')
       } else {
         const errorData = response.data as any
-        const message = errorData?.error?.message || `API Error: ${response.status}`
-        setAiError(message)
+        setAiError(errorData?.error?.message || `API Error: ${response.status}`)
       }
     } catch (error) {
-      console.error('AI Query Error:', error)
-      setAiError(`Connection failed: Check your internet or API allowlist in tauri.conf.json.`)
-      setAiResponse('')
+      setAiError(`Connection failed: Check internet or tauri.conf.json allowlist.`)
     } finally {
       setIsProcessing(false)
       setIsLoading(false)
