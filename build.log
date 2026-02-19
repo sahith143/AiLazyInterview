@@ -1,0 +1,210 @@
+
+> angel-ai-assistant@0.1.0 build:tauri
+> tauri build
+
+     Running beforeBuildCommand `npm run build`
+
+> angel-ai-assistant@0.1.0 build
+> vite build
+
+[36mvite v5.4.21 [32mbuilding for production...[36m[39m
+transforming...
+[32m✓[39m 235 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32mindex.html                 [39m[1m[2m  1.03 kB[22m[1m[22m[2m │ gzip:  0.56 kB[22m
+[2mdist/[22m[35massets/index-DPCm4-f0.css  [39m[1m[2m 19.24 kB[22m[1m[22m[2m │ gzip:  3.99 kB[22m
+[2mdist/[22m[36massets/index-BUALvsdP.js   [39m[1m[2m299.79 kB[22m[1m[22m[2m │ gzip: 91.86 kB[22m
+[32m✓ built in 9.84s[39m
+   Compiling serde_derive v1.0.228
+   Compiling synstructure v0.13.2
+   Compiling zerocopy v0.8.39
+   Compiling zerovec-derive v0.11.2
+   Compiling displaydoc v0.2.5
+   Compiling thiserror-impl v1.0.69
+   Compiling cssparser v0.27.2
+   Compiling serde_json v1.0.149
+   Compiling zerofrom-derive v0.1.6
+   Compiling yoke-derive v0.8.1
+   Compiling thiserror v1.0.69
+   Compiling html5ever v0.26.0
+   Compiling cssparser-macros v0.6.1
+   Compiling strsim v0.11.1
+   Compiling ident_case v1.0.1
+   Compiling shlex v1.3.0
+   Compiling itoa v1.0.17
+   Compiling find-msvc-tools v0.1.9
+   Compiling darling_core v0.21.3
+   Compiling convert_case v0.4.0
+   Compiling zerofrom v0.1.6
+   Compiling cc v1.2.56
+   Compiling yoke v0.8.1
+   Compiling windows_x86_64_msvc v0.53.1
+   Compiling zerovec v0.11.5
+   Compiling libc v0.2.182
+   Compiling log v0.4.29
+   Compiling crc32fast v1.5.0
+   Compiling serde v1.0.228
+   Compiling derive_more v0.99.20
+   Compiling ppv-lite86 v0.2.21
+   Compiling tinystr v0.8.2
+   Compiling writeable v0.6.2
+   Compiling litemap v0.8.1
+   Compiling equivalent v1.0.2
+   Compiling hashbrown v0.16.1
+   Compiling rand_chacha v0.3.1
+   Compiling rand_chacha v0.2.2
+   Compiling icu_locale_core v2.1.1
+   Compiling rand v0.8.5
+   Compiling rand v0.7.3
+   Compiling bytes v1.11.1
+   Compiling indexmap v2.13.0
+   Compiling potential_utf v0.1.4
+   Compiling phf_generator v0.11.3
+   Compiling phf_generator v0.10.0
+   Compiling phf_generator v0.8.0
+   Compiling string_cache_codegen v0.5.4
+   Compiling phf_codegen v0.10.0
+   Compiling phf_macros v0.8.0
+   Compiling phf_codegen v0.8.0
+   Compiling darling_macro v0.21.3
+   Compiling zerotrie v0.2.3
+   Compiling selectors v0.22.0
+   Compiling parking_lot_core v0.9.12
+   Compiling byteorder v1.5.0
+   Compiling new_debug_unreachable v1.0.6
+   Compiling siphasher v0.3.11
+   Compiling markup5ever v0.11.0
+   Compiling fnv v1.0.7
+   Compiling darling v0.21.3
+   Compiling scopeguard v1.2.0
+   Compiling pin-project-lite v0.2.16
+   Compiling lock_api v0.4.14
+   Compiling icu_provider v2.1.1
+   Compiling serde_with_macros v3.16.1
+   Compiling windows-targets v0.53.5
+   Compiling phf_macros v0.11.3
+   Compiling icu_collections v2.1.1
+   Compiling aho-corasick v1.1.4
+   Compiling icu_properties_data v2.1.2
+   Compiling icu_normalizer_data v2.1.1
+   Compiling regex-syntax v0.8.9
+   Compiling winapi v0.3.9
+   Compiling windows-tokens v0.39.0
+   Compiling mac v0.1.1
+   Compiling precomputed-hash v0.1.1
+   Compiling futf v0.1.5
+   Compiling windows-sys v0.60.2
+   Compiling parking_lot v0.12.5
+   Compiling getrandom v0.4.1
+   Compiling zmij v1.0.21
+   Compiling num-traits v0.2.19
+   Compiling dtoa v1.0.11
+   Compiling utf-8 v0.7.6
+   Compiling windows-link v0.1.3
+   Compiling bitflags v1.3.2
+   Compiling tendril v0.4.3
+   Compiling dtoa-short v0.3.5
+   Compiling regex-automata v0.4.14
+   Compiling string_cache v0.8.9
+   Compiling icu_properties v2.1.2
+   Compiling icu_normalizer v2.1.1
+   Compiling phf v0.8.0
+   Compiling toml_datetime v0.6.11
+   Compiling serde_spanned v0.6.9
+   Compiling windows-sys v0.61.2
+   Compiling phf v0.10.1
+   Compiling indexmap v1.9.3
+   Compiling ctor v0.2.9
+   Compiling typenum v1.19.0
+   Compiling futures-core v0.3.32
+   Compiling siphasher v1.0.2
+   Compiling matches v0.1.10
+   Compiling version_check v0.9.5
+   Compiling itoa v0.4.8
+   Compiling semver v1.0.27
+   Compiling once_cell v1.21.3
+   Compiling windows_x86_64_msvc v0.39.0
+   Compiling crossbeam-utils v0.8.21
+   Compiling alloc-no-stdlib v2.0.4
+   Compiling nodrop v0.1.14
+   Compiling generic-array v0.14.7
+   Compiling alloc-stdlib v0.2.2
+   Compiling servo_arc v0.1.1
+   Compiling regex v1.12.3
+   Compiling phf_shared v0.11.3
+   Compiling winapi-util v0.1.11
+   Compiling idna_adapter v1.2.1
+   Compiling uuid v1.21.0
+   Compiling http v0.2.12
+   Compiling fxhash v0.2.1
+   Compiling windows_x86_64_msvc v0.48.5
+   Compiling hashbrown v0.12.3
+   Compiling windows-metadata v0.39.0
+   Compiling percent-encoding v2.3.2
+   Compiling windows_x86_64_msvc v0.52.6
+   Compiling thin-slice v0.1.1
+   Compiling utf8_iter v1.0.4
+   Compiling idna v1.1.0
+   Compiling form_urlencoded v1.2.2
+   Compiling windows-bindgen v0.39.0
+   Compiling cfb v0.7.3
+   Compiling same-file v1.0.6
+   Compiling brotli-decompressor v4.0.3
+   Compiling socket2 v0.6.2
+   Compiling windows-strings v0.4.2
+   Compiling windows-result v0.3.4
+   Compiling windows-implement v0.39.0
+   Compiling phf_shared v0.8.0
+   Compiling phf_shared v0.10.0
+   Compiling jsonptr v0.4.7
+   Compiling vswhom-sys v0.1.3
+   Compiling mio v1.1.1
+   Compiling tokio-macros v2.6.0
+   Compiling windows-implement v0.60.2
+   Compiling windows-interface v0.59.3
+   Compiling simd-adler32 v0.3.8
+   Compiling anyhow v1.0.101
+   Compiling tokio v1.49.0
+   Compiling windows v0.39.0
+   Compiling windows-core v0.61.2
+   Compiling brotli v7.0.0
+   Compiling json-patch v2.0.0
+   Compiling infer v0.13.0
+   Compiling kuchikiki v0.8.2
+   Compiling webview2-com-sys v0.19.0
+   Compiling walkdir v2.5.0
+   Compiling url v2.5.8
+   Compiling windows-targets v0.48.5
+   Compiling serde_with v3.16.1
+   Compiling phf v0.11.3
+   Compiling windows-version v0.1.7
+   Compiling heck v0.5.0
+   Compiling adler2 v2.0.1
+   Compiling winnow v0.7.14
+   Compiling glob v0.3.3
+   Compiling winnow v0.5.40
+   Compiling bytemuck v1.25.0
+   Compiling dunce v1.0.5
+   Compiling toml_write v0.1.2
+   Compiling miniz_oxide v0.8.9
+   Compiling tauri-utils v1.6.2
+   Compiling toml_edit v0.22.27
+   Compiling toml_edit v0.19.15
+   Compiling windows-targets v0.52.6
+   Compiling windows-sys v0.48.0
+   Compiling tracing-core v0.1.36
+   Compiling getrandom v0.2.17
+   Compiling futures-macro v0.3.32
+   Compiling slab v0.4.12
+   Compiling futures-task v0.3.32
+   Compiling raw-window-handle v0.5.2
+   Compiling native-tls v0.2.18
+   Compiling futures-sink v0.3.32
+   Compiling httparse v1.10.1
+   Compiling tokio-util v0.7.18
+error: failed to remove C:\Users\vamsi\AiLazyInterview\src-tauri\target\release\deps\futures_macro-9867f949f4f62e46.futures_macro.c4fc031aa278f5a3-cgu.3.rcgu.o: The process cannot access the file because it is being used by another process. (os error 32)
+
+error: could not compile `futures-macro` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+       Error failed to build app: failed to build app
