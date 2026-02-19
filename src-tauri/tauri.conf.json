@@ -1,6 +1,6 @@
 {
   "build": {
-    "beforeDevCommand": "npm run vite", 
+    "beforeDevCommand": "npm run vite",
     "beforeBuildCommand": "npm run build",
     "devPath": "http://localhost:5173",
     "distDir": "../dist"
@@ -19,27 +19,34 @@
       "window": {
         "all": false,
         "create": true,
+        "hide": true,
+        "show": true,
         "minimize": true,
         "maximize": true,
         "unmaximize": true,
-        "show": true,
-        "hide": true,
         "close": true,
-        "setDecorations": true,
-        "setAlwaysOnTop": true,
-        "setSize": true,
-        "setPosition": true,
-        "setFullscreen": true,
-        "setFocus": true,
         "setSkipTaskbar": true,
-        "setCursorGrab": true,
-        "setCursorVisible": true,
-        "setCursorIcon": true
+        "setAlwaysOnTop": true,
+        "setDecorations": true,
+        "setFocus": true,
+        "setPosition": true,
+        "setSize": true
+      },
+      "http": {
+        "all": true,
+        "request": true,
+        "scope": [
+          "https://generativelanguage.googleapis.com/*",
+          "https://*.supabase.co/*"
+        ]
       },
       "globalShortcut": {
         "all": true
       },
       "notification": {
+        "all": true
+      },
+      "clipboard": {
         "all": true
       }
     },
@@ -51,12 +58,13 @@
         "title": "Angel AI Assistant",
         "width": 800,
         "decorations": false,
-        "transparent": false,
-        "alwaysOnTop": false
+        "transparent": true,
+        "alwaysOnTop": true,
+        "skipTaskbar": false
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://generativelanguage.googleapis.com https://*.supabase.co; media-src 'self' blob:; img-src 'self' data:; frame-src 'self';"
     }
   }
 }

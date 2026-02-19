@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { invoke } from '@tauri-apps/api/tauri'
+import { getClient, ResponseType } from '@tauri-apps/api/http' // Use Tauri's HTTP client for better security
 import { useAppStore } from '../store/useAppStore'
 
 interface AiQueryResponse {
@@ -16,23 +16,55 @@ export const useAiQuery = () => {
 
     setIsProcessing(true)
     setIsLoading(true)
+    setAiError(null)
 
     try {
-      const result = await invoke<AiQueryResponse>('query_ai', {
-        transcript: transcript.trim(),
-        apiKey,
-        apiProvider,
+      // Use Tauri's specialized HTTP client to bypass CORS issues
+      const client = await getClient()
+      
+      let endpoint = ''
+      let payload = {}
+      let headers = {
+        'Content-Type': 'application/json'
+      }
+
+      if (apiProvider === 'gemini') {
+        endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`
+        payload = {
+          contents: [{ parts: [{ text: `You are a meeting assistant. Based on this transcript: "${transcript}", provide a concise summary or helpful insights.` }] }]
+        }
+      } else {
+        // Fallback to OpenAI
+        endpoint = 'https://api.openai.com/v1/chat/completions'
+        headers['Authorization'] = `Bearer ${apiKey}`
+        payload = {
+          model: 'gpt-3.5-turbo',
+          messages: [{ role: 'user', content: transcript }]
+        }
+      }
+
+      const response = await client.post(endpoint, payload, {
+        headers,
+        responseType: ResponseType.JSON
       })
 
-      if (result.error) {
-        setAiError(result.error)
-        setAiResponse('')
+      if (response.ok) {
+        // Extracting text based on provider structure
+        let aiText = ''
+        if (apiProvider === 'gemini') {
+          aiText = response.data.candidates[0].content.parts[0].text
+        } else {
+          aiText = response.data.choices[0].message.content
+        }
+        
+        setAiResponse(aiText)
       } else {
-        setAiResponse(result.response)
-        setAiError(null)
+        const errorData = response.data as any
+        setAiError(errorData?.error?.message || 'API request failed')
       }
     } catch (error) {
-      setAiError(`Failed to query AI: ${error}`)
+      console.error('AI Query Error:', error)
+      setAiError(`Network error: Ensure your API key is correct and you have internet access.`)
       setAiResponse('')
     } finally {
       setIsProcessing(false)
