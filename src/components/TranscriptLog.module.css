@@ -1,0 +1,23 @@
+.container {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-lg);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  margin-bottom: var(--spacing-md);
+}
+
+.text {
+  margin: 0;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  word-wrap: break-word;
+}
+
+.placeholder {
+  margin: 0;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  font-style: italic;
+}
