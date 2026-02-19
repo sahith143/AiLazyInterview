@@ -1,20 +1,46 @@
 {
-  "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Angel AI Assistant",
-  "version": "0.1.0",
-  "identifier": "com.angel.assistant",
-  "bundle": {
-    "active": true,
-    "targets": "all",
-    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"]
-  },
   "build": {
     "beforeDevCommand": "npm run vite",
     "beforeBuildCommand": "npm run build",
-    "frontendDist": "../dist",
-    "devUrl": "http://localhost:5173"
+    "devPath": "http://localhost:5173",
+    "distDir": "../dist"
   },
-  "app": {
+  "package": {
+    "productName": "Angel AI Assistant",
+    "version": "0.1.0"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "shell": { "all": false, "open": true },
+      "window": {
+        "all": false,
+        "create": true,
+        "hide": true,
+        "show": true,
+        "minimize": true,
+        "maximize": true,
+        "close": true,
+        "startDragging": true,
+        "setAlwaysOnTop": true,
+        "setFocus": true
+      },
+      "http": {
+        "all": true,
+        "request": true,
+        "scope": [
+          "https://generativelanguage.googleapis.com/*",
+          "https://api.openai.com/*"
+        ]
+      },
+      "globalShortcut": { "all": true }
+    },
+    "bundle": {
+      "active": true,
+      "targets": "all",
+      "identifier": "com.angel.assistant",
+      "icon": ["icons/icon.ico", "icons/icon.png"]
+    },
     "windows": [
       {
         "title": "Angel AI Assistant",
