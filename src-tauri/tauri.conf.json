@@ -27,8 +27,7 @@
         "setDecorations": true,
         "setFocus": true,
         "setPosition": true,
-        "setSize": true,
-        "setVisible": true 
+        "setSize": true
       },
       "http": {
         "all": true,
