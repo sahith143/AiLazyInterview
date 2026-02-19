@@ -2,13 +2,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--spacing-md); /* Removed vertical padding to fix height */
-  height: 48px; /* Fixed height for a consistent drag area */
+  padding: 0 var(--spacing-md);
+  height: 48px;
   background-color: var(--color-bg-secondary);
   border-bottom: 1px solid var(--color-border);
   user-select: none;
   
-  /* IMPORTANT: This makes the cursor look correct over the drag area */
+  /* This tells the OS this is the handle to move the app */
   cursor: grab;
 }
 
@@ -21,7 +21,9 @@
   align-items: center;
   gap: var(--spacing-md);
   flex: 1;
-  /* Prevent child text from blocking the drag event */
+  height: 100%; /* Ensure it covers the vertical area */
+  
+  /* CRITICAL: Allows clicks to pass through to the 'data-tauri-drag-region' */
   pointer-events: none; 
 }
 
@@ -36,11 +38,12 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  /* Re-enable pointer events so buttons and toggles remain clickable */
+  height: 100%;
+  
+  /* CRITICAL: Re-enables clicking for buttons/toggles */
   pointer-events: auto;
 }
 
-/* NEW: Container for Pin and Privacy toggles */
 .toggleGroup {
   display: flex;
   align-items: center;
@@ -62,14 +65,13 @@
 }
 
 .toggleText {
-  font-size: 11px;
+  font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--color-text-secondary);
   white-space: nowrap;
 }
 
-/* NEW: Window Action Buttons (Minimize/Close) */
 .windowActions {
   display: flex;
   align-items: center;

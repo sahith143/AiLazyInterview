@@ -1,8 +1,9 @@
 :root {
   --spacing-lg: 20px;
   --spacing-md: 12px;
-  --bg-color: rgba(30, 30, 30, 0.9);
+  --bg-color: rgba(30, 30, 30, 0.95);
   --border-color: rgba(255, 255, 255, 0.1);
+  --accent-color: #00d2ff;
 }
 
 * {
@@ -18,39 +19,40 @@
   width: 100vw;
   overflow: hidden;
   background-color: var(--bg-color); 
+  backdrop-filter: blur(10px); /* Adds a premium frosted glass effect */
   color: white;
   border: 1px solid var(--border-color);
   border-radius: 12px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* THE HEADER / DRAG HANDLE */
-.header {
+/* THE DRAG REGION CONTAINER */
+.titlebar {
   height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 var(--spacing-lg);
-  background: rgba(255, 255, 255, 0.03);
-  border-bottom: 1px solid var(--border-color);
-  
-  /* Interaction styles */
+  width: 100%;
+  /* This is the native handle for the OS */
   cursor: grab;
-  user-select: none;
 }
 
-.header:active {
+.titlebar:active {
   cursor: grabbing;
 }
 
-/* FIX: Buttons must have pointer-events auto 
-   to override potential parent drag region blocks 
+/* CRITICAL FIX: 
+   Everything inside the titlebar ignores mouse events so they pass to 
+   the 'data-tauri-drag-region'. We then re-enable events for buttons.
 */
-.header button, 
-.header .settings-icon,
+.titlebar > * {
+  pointer-events: none;
+}
+
+.titlebar button,
+.titlebar input,
+.titlebar select,
+.titlebar svg,
 .hide-btn {
+  pointer-events: auto !important;
   cursor: pointer;
-  pointer-events: auto; /* Ensures the button is clickable */
 }
 
 .main {
@@ -62,9 +64,33 @@
   gap: var(--spacing-md);
 }
 
+.controls-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  margin-top: auto;
+}
+
+.hide-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: #aaa;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.hide-btn:hover {
+  background: rgba(255, 68, 68, 0.1);
+  color: #ff4757;
+  border-color: rgba(255, 68, 68, 0.2);
+}
+
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -77,5 +103,5 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--accent-color);
 }
