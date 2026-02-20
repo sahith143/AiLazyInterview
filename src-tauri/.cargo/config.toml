@@ -1,0 +1,6 @@
+[build]
+target-dir = "C:/Windows/Temp/angel-ai-build"
+incremental = false
+
+[profile.dev]
+incremental = false
